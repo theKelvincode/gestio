@@ -1,7 +1,6 @@
 package com.gestio.fms.auth.service;
 
 import com.gestio.fms.auth.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 // this is how we find users once we try to log in
 
 @Service
-@AllArgsConstructor
 public class UserService implements UserDetailsService {
 
     private final static String USER_NOT_FOUND_MSG =
@@ -19,9 +17,14 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-   /* We have to figure out how to find a user by username, which in this case will be the email.
-       To achieve that, what we need is to have a query against our database, hence a reference to the application
-       repository interface */
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+
+    /* We have to figure out how to find a user by username, which in this case will be the email.
+        To achieve that, what we need is to have a query against our database, hence a reference to the application
+        repository interface */
     @Override
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
@@ -29,5 +32,9 @@ public class UserService implements UserDetailsService {
                 .orElseThrow( () ->
                         new UsernameNotFoundException(
                                 String.format(USER_NOT_FOUND_MSG, email)));
+    }
+
+    public int enableUser(String email) {
+       return userRepository.enableUser(email);
     }
 }

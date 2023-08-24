@@ -1,4 +1,4 @@
-package com.gestio.fms.auth.entities;
+package com.gestio.fms.user;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Builder
-// help build our object in an easily using design pattern builder
+// help build our object easily using design pattern builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -21,7 +21,7 @@ import java.util.List;
 @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
 
 // implements the user details for spring security...
-public class User implements UserDetails {
+public  class User implements UserDetails {
 
     public User(String email,
                 String password,
@@ -40,20 +40,26 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(generator = "user_sequence", strategy =  GenerationType.SEQUENCE)
     private Long id;
-    private String email;
+    private  String email;
     private String password;
     private String firstName;
     private String lastName;
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    //set app user to locked by default
+    private Boolean locked = false;
+
+    private Boolean enabled = false;
     private int phoneNumber;
+
 
 
     // this method should return a list of roles
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        // based on our design, a user ca only have one role.
+        // based on our design, a user can only have one role.
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
@@ -63,13 +69,18 @@ public class User implements UserDetails {
     }
 
     @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return locked;
     }
 
     @Override
@@ -79,7 +90,15 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

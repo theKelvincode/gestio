@@ -1,4 +1,4 @@
-package com.gestio.fms.auth.entities;
+package com.gestio.fms.user;
 
 import lombok.Getter;
 
